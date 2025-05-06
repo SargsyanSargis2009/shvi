@@ -64,10 +64,9 @@ Deno.test("Tokenizer", async (t) => {
       const expected = [[
         atom("+"),
         1,
-        [atom("*"), 2, 3]
+        [atom("*"), 2, 3],
       ]];
       assertEquals(tokenize(input), expected);
     },
   });
-
 });

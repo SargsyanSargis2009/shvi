@@ -109,17 +109,18 @@ const tokenize = (input) => {
   return loop([[]], [...input]);
 };
 
-
 const evaluate = (expression) => {
   if (typeof expression === "number") return expression;
 
   if (Array.isArray(expression)) {
     const [first, ...rest] = expression;
     if (typeof first === "symbol" && Symbol.keyFor(first) === "tone") {
-      const  [frequency, duration] = rest;
+      const [frequency, duration] = rest;
       return generatePCM(frequency, duration);
     } else {
-      const name = typeof first === "symbol" ? Symbol.keyFor(first) || first.toString() : String(first);
+      const name = typeof first === "symbol"
+        ? Symbol.keyFor(first) || first.toString()
+        : String(first);
       throw new Error("Unknown function: " + name);
     }
   }

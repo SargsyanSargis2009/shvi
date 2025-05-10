@@ -67,7 +67,10 @@ Deno.test("Recursion", async (t) => {
         if (!substr) return str;
         const index = str.indexOf(substr);
         if (index === -1) return str;
-        return strip(str.slice(0, index) + str.slice(index + substr.length), substr);
+        return strip(
+          str.slice(0, index) + str.slice(index + substr.length),
+          substr,
+        );
       }
 
       const generalResult = strip("Skies are grey in Greece", "re");
@@ -85,7 +88,7 @@ Deno.test("Recursion", async (t) => {
       function flatten(arr) {
         return arr.reduce(
           (acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val),
-          []
+          [],
         );
       }
 

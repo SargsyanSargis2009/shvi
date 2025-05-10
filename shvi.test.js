@@ -58,4 +58,22 @@ Deno.test("Playing things", async (t) => {
     },
     ignore: false,
   });
+
+  await t.step({
+    name: "playing a D4 for two seconds",
+    fn: async () => {
+      const music = `
+            (tone 293.66 200)
+          `;
+
+      const tokens = tokenize(music);
+      const samples = evaluate(tokens[0]);
+
+      encodeWAV(samples);
+
+      console.log("Playing generated WAV file...");
+      await play("output.wav");
+    },
+    ignore: false,
+  });
 });

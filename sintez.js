@@ -126,13 +126,3 @@ const evaluate = (expression) => {
     }
   }
 };
-
-const run = (
-  program,
-  definitions = [],
-) => {
-  const tokens = tokenize(program);
-  const value = evaluate(tokens, definitions);
-
-  return value;
-};

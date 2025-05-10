@@ -1,4 +1,4 @@
-export { encodeWAV, generatePCM, tokenize };
+export { encodeWAV, generatePCM, tokenize, typeify };
 
 // sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
 
@@ -65,6 +65,11 @@ async function encodeWAV(
 }
 
 const atom = (name) => Symbol.for(name);
+
+const typeify = (token) => {
+  const number = Number.parseFloat(token, 10);
+  return Number.isNaN(number) ? atom(token) : number;
+};
 
 const tokenize = (input) => {
   if (input.trim() === "") return [];

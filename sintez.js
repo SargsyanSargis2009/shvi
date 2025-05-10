@@ -3,13 +3,6 @@ export { encodeWAV, evaluate, generatePCM, run, tokenize, typeify };
 const amplitude = 32767;
 const sampleRate = 44100;
 
-// sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
-
-// Where:
-//   A: Amplitude (max value based on bit depth, e.g., 32767 for 16-bit)
-//   f: Frequency (Hz), e.g., middle C = 261.63 Hz
-//   R: Sample rate (samples per second), typically 44100 Hz
-//   n: Sample number (integer), from 0 to R × duration − 1
 
 // sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
 
@@ -114,6 +107,7 @@ const typeify = (token) => {
 
 const atom = (name) => Symbol.for(name);
 
+
 const tokenize = (input) => {
   if (input.trim() === "") return [];
   const loop = (
@@ -199,3 +193,4 @@ const run = (input) => {
   const expression = tokens[0];
   return evaluate(expression);
 };
+

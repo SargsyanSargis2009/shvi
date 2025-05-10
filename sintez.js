@@ -105,7 +105,6 @@ const typeify = (token) => {
 const atom = (name) => Symbol.for(name);
 
 
-
 const tokenize = (input) => {
   if (input.trim() === "") return [];
   const loop = (

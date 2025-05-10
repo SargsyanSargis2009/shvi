@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { assertEquals, fail } from "jsr:@std/assert";
 
 Deno.test("Recursion", async (t) => {
@@ -37,6 +38,24 @@ Deno.test("Recursion", async (t) => {
       const emptyStringResult = reverseCapitalize("");
       assertEquals(generalResult, "YRrOs nAHt eFAs rEtTEb");
       assertEquals(emptyStringResult, "");
+=======
+import { assertEquals } from "jsr:@std/assert";
+
+Deno.test("Recursion", async (t) => {
+  await t.step({
+    name: "reverse capitalize a string",
+    fn: () => {
+      const reverseCapitalize = (str) => {
+        const loop = (str, acc) => {
+          throw new Error("Not implemented");
+        };
+
+        return loop(str, "");
+      };
+
+      const result = reverseCapitalize("BetTeR SafE ThaN SoRry");
+      assertEquals(result, "bETtEr sAFe tHaN sOrrY");
+>>>>>>> 61b16fe (:construction: setup for step 03)
     },
   });
 

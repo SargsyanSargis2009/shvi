@@ -72,11 +72,11 @@ const tokenize = (input) => {
   return input
     .trim()
     .split(/\s+/)
-    .map(token => {
+    .map((token) => {
       if (!isNaN(token)) {
         return Number(token);
       } else {
-        return Symbol.for(token);
+        return atom(token);
       }
     });
 };

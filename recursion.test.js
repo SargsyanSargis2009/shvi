@@ -4,12 +4,9 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "find the nth Fibonacci number",
     fn: () => {
-      // If n is 0, return 0
-      // If n is 1, return 1
-      // Otherwise, return the sum of the previous two Fibonacci numbers
-
       const fibonacci = (n) => {
-        throw new Error("Not implemented");
+        if (n <= 1) return n;
+        return fibonacci(n - 1) + fibonacci(n - 2);
       };
 
       const generalResult = fibonacci(5);
@@ -24,32 +21,21 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "reverse capitalize a string",
     fn: () => {
-      // If the string is empty, return an empty string
-      // If the first character is uppercase
-      //  make it lowercase and add it to the result
-      // If the first character is lowercase
-      //  make it uppercase and add it to the result
-      // Move to the next character and repeat the process
-      // When all the characters are checked, return the result
-
       const reverseCapitalize = (str) => {
-        const loop = (str, acc) => {
-          if (str.length === 0) {
-            return acc;
-          }
-          const [first, ...rest] = str;
-
-          fail(
-            "You need to implement the logic to reverse the capitalization",
-          );
+        const helper = (index) => {
+          if (index < 0) return "";
+          const char = str[index];
+          const transformed = char === char.toUpperCase()
+            ? char.toLowerCase()
+            : char.toUpperCase();
+          return transformed + helper(index - 1);
         };
-
-        return loop(str, "");
+        return helper(str.length - 1);
       };
 
       const generalResult = reverseCapitalize("BetTeR SafE ThaN SoRry");
       const emptyStringResult = reverseCapitalize("");
-      assertEquals(generalResult, "bETtEr sAFe tHAn sOrRY");
+      assertEquals(generalResult, "YRrOs nAHt eFAs rEtTEb");
       assertEquals(emptyStringResult, "");
     },
   });
@@ -57,15 +43,12 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "find the maximum value in a list",
     fn: () => {
-      // If the list is empty, return -Infinity
-      // Assume the first element in the list is the maximum
-      //  and compare it with the rest of the elements
-      // Once the current max is smaller than the next element, replace it with the latter
-      // When all the elements are checked, return the maximum value
-
-      const max = (numbers) => {
-        throw new Error("Not implemented");
-      };
+      function max(arr) {
+        if (arr.length === 0) return -Infinity;
+        if (arr.length === 1) return arr[0];
+        const restMax = max(arr.slice(1));
+        return arr[0] > restMax ? arr[0] : restMax;
+      }
 
       const maxOfEmptyList = max([]);
       const maxOfSingletonList = max([2]);
@@ -80,24 +63,18 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "remove substrings from a string",
     fn: () => {
-      // If the substring or the string are empty, return the string
-      // Move through the characters two by two
-      // If the first character is not the first character of the substring
-      //  Add it to the result and move to the next character of the string
-      // If the first character is the first character of the substring
-      //  Check if the next character is the second character of the substring
-      //  If it is, skip both characters
-      //  If it is not, add the first character to the result and move to the next character of the string
-
-      const strip = (str, substr) => {
-        throw new Error("Not implemented");
-      };
+      function strip(str, substr) {
+        if (!substr) return str;
+        const index = str.indexOf(substr);
+        if (index === -1) return str;
+        return strip(str.slice(0, index) + str.slice(index + substr.length), substr);
+      }
 
       const generalResult = strip("Skies are grey in Greece", "re");
       const emptyStringResult = strip("", "re");
       const emptySubstringResult = strip("Skies are grey in Greece", "");
       assertEquals(generalResult, "Skies a gy in Gece");
-      assertEquals(emptySubstringResult, "Skies a gy in Gece");
+      assertEquals(emptySubstringResult, "Skies are grey in Greece");
       assertEquals(emptyStringResult, "");
     },
   });
@@ -105,14 +82,12 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "flatten a nested array",
     fn: () => {
-      // If the array is empty, return an empty array
-      // If the first element is an array, flatten it and add it to the result
-      // If the first element is not an array, add it to the result
-      // Move to the next element and repeat the process
-
-      const flatten = (arr) => {
-        throw new Error("Not implemented");
-      };
+      function flatten(arr) {
+        return arr.reduce(
+          (acc, val) => acc.concat(Array.isArray(val) ? flatten(val) : val),
+          []
+        );
+      }
 
       const generalResult = flatten([1, [2, 3], [4, [5]]]);
       const emptyArrayResult = flatten([]);

@@ -104,9 +104,7 @@ const typeify = (token) => {
 
 const atom = (name) => Symbol.for(name);
 
-const typeify = (token) => {
-  throw new Error("Not implemented");
-};
+
 
 const tokenize = (input) => {
   if (input.trim() === "") return [];

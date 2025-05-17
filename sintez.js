@@ -66,20 +66,14 @@ async function encodeWAV(
 }
 
 const typeify = (token) => {
-<<<<<<< HEAD
   if (!isNaN(token)) return parseFloat(token);
   return atom(token);
-=======
-  const parsedNumber = Number.parseFloat(token, 10);
-  return Number.isNaN(parsedNumber) ? Symbol.for(token) : parsedNumber;
->>>>>>> 1289be1 (:constructions: setting up for playing sequences)
 };
 
 const atom = (name) => Symbol.for(name);
 
 const tokenize = (input) => {
   if (input.trim() === "") return [];
-
   const loop = (
     stack,
     [char, ...rest],

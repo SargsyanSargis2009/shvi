@@ -36,6 +36,7 @@ async function encodeWAV(
 
   const writeString = (offset, str) => {
     for (let i = 0; i < str.length; i++) {
+      console.log({ offset });
       view.setUint8(offset + i, str.charCodeAt(i));
     }
   };
@@ -67,23 +68,59 @@ async function encodeWAV(
 const atom = (name) => Symbol.for(name);
 
 const typeify = (token) => {
-  throw new Error("Not implemented");
+  if (!isNaN(token)) return parseFloat(token);
+  return atom(token);
 };
 
 const tokenize = (input) => {
   if (input.trim() === "") return [];
 
   const loop = (
-    progressiveScope,
-    [graphemeAtHand, ...restOfGraphemes],
-    tokenSoFar = "",
+    stack,
+    [char, ...rest],
+    token = "",
   ) => {
-    throw new Error("Not implemented");
+    if (char === undefined) {
+      if (token) stack[stack.length - 1].push(typeify(token));
+      return stack[0];
+    }
+
+    if (char === "(") {
+      const newList = [];
+      stack[stack.length - 1].push(newList);
+      stack.push(newList);
+      return loop(stack, rest, "");
+    }
+
+    if (char === ")") {
+      if (token) stack[stack.length - 1].push(typeify(token));
+      stack.pop();
+      return loop(stack, rest, "");
+    }
+
+    if (char === " " || char === "\n" || char === "\t") {
+      if (token) stack[stack.length - 1].push(typeify(token));
+      return loop(stack, rest, "");
+    }
+
+    return loop(stack, rest, token + char);
   };
 
-  return loop([[]], graphemes);
+  return loop([[]], [...input]);
 };
 
+
 const evaluate = (expression) => {
-  throw new Error("Not implemented");
+  if (typeof expression === "number") return expression;
+
+  if (Array.isArray(expression)) {
+    const [first, ...rest] = expression;
+    if (typeof first === "symbol" && Symbol.keyFor(first) === "tone") {
+      const  [frequency, duration] = rest;
+      return generatePCM(frequency, duration);
+    } else {
+      const name = typeof first === "symbol" ? Symbol.keyFor(first) || first.toString() : String(first);
+      throw new Error("Unknown function: " + name);
+    }
+  }
 };

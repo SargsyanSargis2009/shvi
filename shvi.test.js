@@ -37,7 +37,7 @@ Deno.test("Playing things", async (t) => {
       console.log("Playing generated WAV file...");
       await play("output.wav");
     },
-    ignore: true,
+    ignore: false,
   });
 
   await t.step({
@@ -48,6 +48,7 @@ Deno.test("Playing things", async (t) => {
           `;
 
       const tokens = tokenize(music);
+      console.log({ tokens });
       const samples = evaluate(tokens[0]);
 
       encodeWAV(samples);

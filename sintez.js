@@ -4,6 +4,9 @@ const amplitude = 32767;
 const sampleRate = 44100;
 
 
+const AMPLITUDE = 32767;
+const SAMPLE_RATE = 44100;
+
 // sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
 
 // Where:
@@ -60,10 +63,14 @@ function generatePCM(frequency, duration) {
   return [...fadeIn, ...sustain, ...fadeOut];
 }
 
-function sequence(...PCMs) {
-  throw new Error(
-    "🪈 The `sequence` function is not implemented yet.",
-  );
+function sequence(...tones) {
+  const samples = [];
+  for (const tone of tones) {
+    for (const PCM of tone) {
+      samples.push(PCM);
+    }
+  }
+  return samples;
 }
 
 async function encodeWAV(

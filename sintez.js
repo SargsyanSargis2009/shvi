@@ -1,5 +1,8 @@
 export { encodeWAV, evaluate, generatePCM, tokenize, typeify };
 
+const AMPLITUDE = 32767;
+const SAMPLE_RATE = 44100;
+
 // sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
 
 // Where:

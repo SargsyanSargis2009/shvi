@@ -8,21 +8,53 @@ export { encodeWAV, evaluate, generatePCM, tokenize, typeify };
 //   R: Sample rate (samples per second), typically 44100 Hz
 //   n: Sample number (integer), from 0 to R × duration − 1
 
-function generatePCM(frequency, duration) {
-  const amplitude = 32767;
-  const sampleRate = 44100;
+const amplitude = 32767;
+const sampleRate = 44100;
 
-  const numSamples = Math.floor(sampleRate * (duration / 1000));
-
+function fadeInPart(frequency, fadeSamples) {
   const samples = [];
-  for (let i = 0; i < numSamples; i++) {
+  for (let i = 0; i < fadeSamples; i++) {
     const t = i / sampleRate;
+    const volume = i / fadeSamples;
+    const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
+    samples.push(sample);
+  }
+  return samples;
+}
+
+function sustainPart(frequency, sustainSamples, startIndex) {
+  const samples = [];
+  for (let i = 0; i < sustainSamples; i++) {
+    const t = (startIndex + i) / sampleRate;
     const sample = amplitude * Math.sin(2 * Math.PI * frequency * t);
     samples.push(sample);
   }
-
   return samples;
 }
+
+function fadeOutPart(frequency, fadeSamples, startIndex) {
+  const samples = [];
+  for (let i = 0; i < fadeSamples; i++) {
+    const t = (startIndex + i) / sampleRate;
+    const volume = (fadeSamples - i) / fadeSamples;
+    const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
+    samples.push(sample);
+  }
+  return samples;
+}
+
+function generatePCM(frequency, duration) {
+  const totalSamples = Math.floor(sampleRate * (duration / 1000));
+  const fadeSamples = Math.floor(totalSamples / 10);
+  const sustainSamples = totalSamples - fadeSamples * 2;
+
+  const fadeIn = fadeInPart(frequency, fadeSamples);
+  const sustain = sustainPart(frequency, sustainSamples, fadeSamples);
+  const fadeOut = fadeOutPart(frequency, fadeSamples, fadeSamples + sustainSamples);
+
+  return [...fadeIn, ...sustain, ...fadeOut];
+}
+
 
 async function encodeWAV(
   samples,
@@ -36,7 +68,6 @@ async function encodeWAV(
 
   const writeString = (offset, str) => {
     for (let i = 0; i < str.length; i++) {
-      console.log({ offset });
       view.setUint8(offset + i, str.charCodeAt(i));
     }
   };
@@ -108,19 +139,24 @@ const tokenize = (input) => {
   return loop([[]], [...input]);
 };
 
-const evaluate = (expression) => {
+function evaluate(expression) {
   if (typeof expression === "number") return expression;
 
   if (Array.isArray(expression)) {
-    const [first, ...rest] = expression;
-    if (typeof first === "symbol" && Symbol.keyFor(first) === "tone") {
-      const [frequency, duration] = rest;
-      return generatePCM(frequency, duration);
-    } else {
-      const name = typeof first === "symbol"
-        ? Symbol.keyFor(first) || first.toString()
-        : String(first);
-      throw new Error("Unknown function: " + name);
+    const [head, ...rest] = expression;
+
+    if (head === Symbol.for("tone")) {
+      const [freq, duration] = rest;
+      return generatePCM(freq, duration);
     }
+
+    if (head === Symbol.for("sequence")) {
+      const sequences = rest.map(evaluate);
+      return sequences.flat();
+    }
+
+    throw new Error("Unknown function: " + head.toString());
   }
-};
+
+  throw new Error("Invalid expression: " + expression);
+}

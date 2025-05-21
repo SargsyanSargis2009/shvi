@@ -11,39 +11,40 @@ export { encodeWAV, evaluate, generatePCM, tokenize, typeify };
 const amplitude = 32767;
 const sampleRate = 44100;
 
-function fadeInPart(frequency, fadeSamples) {
-  const samples = [];
-  for (let i = 0; i < fadeSamples; i++) {
-    const t = i / sampleRate;
-    const volume = i / fadeSamples;
-    const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
-    samples.push(sample);
-  }
-  return samples;
-}
-
-function sustainPart(frequency, sustainSamples, startIndex) {
-  const samples = [];
-  for (let i = 0; i < sustainSamples; i++) {
-    const t = (startIndex + i) / sampleRate;
-    const sample = amplitude * Math.sin(2 * Math.PI * frequency * t);
-    samples.push(sample);
-  }
-  return samples;
-}
-
-function fadeOutPart(frequency, fadeSamples, startIndex) {
-  const samples = [];
-  for (let i = 0; i < fadeSamples; i++) {
-    const t = (startIndex + i) / sampleRate;
-    const volume = (fadeSamples - i) / fadeSamples;
-    const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
-    samples.push(sample);
-  }
-  return samples;
-}
-
 function generatePCM(frequency, duration) {
+  
+  function fadeInPart(frequency, fadeSamples) {
+    const samples = [];
+    for (let i = 0; i < fadeSamples; i++) {
+      const t = i / sampleRate;
+      const volume = i / fadeSamples;
+      const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
+      samples.push(sample);
+    }
+    return samples;
+  }
+  
+  function sustainPart(frequency, sustainSamples, startIndex) {
+    const samples = [];
+    for (let i = 0; i < sustainSamples; i++) {
+      const t = (startIndex + i) / sampleRate;
+      const sample = amplitude * Math.sin(2 * Math.PI * frequency * t);
+      samples.push(sample);
+    }
+    return samples;
+  }
+  
+  function fadeOutPart(frequency, fadeSamples, startIndex) {
+    const samples = [];
+    for (let i = 0; i < fadeSamples; i++) {
+      const t = (startIndex + i) / sampleRate;
+      const volume = (fadeSamples - i) / fadeSamples;
+      const sample = amplitude * volume * Math.sin(2 * Math.PI * frequency * t);
+      samples.push(sample);
+    }
+    return samples;
+  }
+
   const totalSamples = Math.floor(sampleRate * (duration / 1000));
   const fadeSamples = Math.floor(totalSamples / 10);
   const sustainSamples = totalSamples - fadeSamples * 2;

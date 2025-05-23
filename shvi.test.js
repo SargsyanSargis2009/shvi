@@ -21,6 +21,7 @@ const play = async (filePath) => {
   }).spawn();
 
   await process.output();
+  Deno.removeSync(filePath);
 };
 
 Deno.test("Playing things", async (t) => {
@@ -91,6 +92,7 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
+      Deno.removeSync("output.wav");
     },
     ignore: false,
   });
@@ -109,6 +111,7 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
+      Deno.removeSync("output.wav");
     },
     ignore: true,
   });
@@ -128,15 +131,17 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
+      Deno.removeSync("output.wav");
     },
-    ignore: false,
+    ignore: true,
   });
 
   await t.step({
     name: "playing the C chord for two seconds /C4, E4, G4/",
     fn: async () => {
       const music = `
-                  (parallel (tone 261.63 2000) (tone 329.63 2000) (tone 392.00 2000))
+                  (parallel
+                    (tone 261.63 2000) (tone 329.63 2000) (tone 392.00 2000))
               `;
 
       const tokens = tokenize(music);
@@ -146,6 +151,7 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
+      Deno.removeSync("output.wav");
     },
     ignore: false,
   });

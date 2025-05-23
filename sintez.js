@@ -1,4 +1,4 @@
-export { encodeWAV, evaluate, generatePCM, tokenize, typeify };
+export { encodeWAV, evaluate, generatePCM, run, tokenize, typeify };
 
 const AMPLITUDE = 32767;
 const SAMPLE_RATE = 44100;
@@ -163,6 +163,10 @@ function evaluate(expression) {
 
     throw new Error("Unknown function: " + head.toString());
   }
+};
 
-  throw new Error("Invalid expression: " + expression);
-}
+const run = (input) => {
+  const tokens = tokenize(input);
+  const expression = tokens[0];
+  return evaluate(expression);
+};

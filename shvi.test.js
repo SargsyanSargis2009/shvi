@@ -75,6 +75,7 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
+      Deno.removeSync("output.wav");
     },
     ignore: true,
   });

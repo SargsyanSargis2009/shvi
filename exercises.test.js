@@ -47,13 +47,8 @@ Deno.test("Recursion", async (t) => {
         const clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
         if (clean.length <= 1) return true;
         if (clean[0] !== clean[clean.length - 1]) return false;
-        return isPalindrome(clean.slice(1, -1));
       };
       
-
-      const generalResult = isPalindrome("racecar");
-      const emptyStringResult = isPalindrome("");
-      const nonPalindromeResult = isPalindrome("hello");
       assertEquals(generalResult, true);
       assertEquals(emptyStringResult, true);
       assertEquals(nonPalindromeResult, false);

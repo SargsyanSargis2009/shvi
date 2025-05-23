@@ -322,4 +322,3 @@ const run = (input) => {
   const expression = tokens[0];
   return evaluate(expression);
 };
-

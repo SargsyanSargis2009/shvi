@@ -3,7 +3,6 @@ export { encodeWAV, evaluate, generatePCM, run, tokenize, typeify };
 const amplitude = 32767;
 const sampleRate = 44100;
 
-
 // sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
 
 // Where:
@@ -13,7 +12,6 @@ const sampleRate = 44100;
 //   n: Sample number (integer), from 0 to R × duration − 1
 
 function generatePCM(frequency, duration) {
-  
   function fadeInPart(frequency, fadeSamples) {
     const samples = [];
     for (let i = 0; i < fadeSamples; i++) {
@@ -24,7 +22,7 @@ function generatePCM(frequency, duration) {
     }
     return samples;
   }
-  
+
   function sustainPart(frequency, sustainSamples, startIndex) {
     const samples = [];
     for (let i = 0; i < sustainSamples; i++) {
@@ -34,7 +32,7 @@ function generatePCM(frequency, duration) {
     }
     return samples;
   }
-  
+
   function fadeOutPart(frequency, fadeSamples, startIndex) {
     const samples = [];
     for (let i = 0; i < fadeSamples; i++) {
@@ -52,11 +50,14 @@ function generatePCM(frequency, duration) {
 
   const fadeIn = fadeInPart(frequency, fadeSamples);
   const sustain = sustainPart(frequency, sustainSamples, fadeSamples);
-  const fadeOut = fadeOutPart(frequency, fadeSamples, fadeSamples + sustainSamples);
+  const fadeOut = fadeOutPart(
+    frequency,
+    fadeSamples,
+    fadeSamples + sustainSamples,
+  );
 
   return [...fadeIn, ...sustain, ...fadeOut];
 }
-
 
 async function encodeWAV(
   samples,
@@ -105,7 +106,6 @@ const typeify = (token) => {
 
 const atom = (name) => Symbol.for(name);
 
-
 const tokenize = (input) => {
   if (input.trim() === "") return [];
   const loop = (
@@ -148,34 +148,38 @@ const evaluate = (expression) => {
   if (Array.isArray(expression)) {
     const [head, ...rest] = expression;
 
-    if (head === Symbol.for("tone")) {
+    if (head === atom("tone")) {
       const [freq, dur] = rest;
       return generatePCM(freq, dur);
     }
 
-    if (head === Symbol.for("sequence")) {
-      return rest.map(evaluate).flat();
+    if (head === atom("sequence")) {
+      const sequences = rest.map(evaluate);
+      return sequences.flat();
     }
 
-    if (head === Symbol.for("parallel")) {
-      const tones = rest.map(evaluate);
-      const maxLength = Math.max(...tones.map(t => t.length));
+    if (head === atom("parallel")) {
+      const parts = rest.map(evaluate);
+      const maxLength = Math.max(...parts.map((p) => p.length));
+      const output = new Array(maxLength).fill(0);
 
-      const padded = tones.map(t => {
-        const missing = maxLength - t.length;
-        return t.concat(new Array(missing).fill(0));
-      });
-
-      const result = [];
-      for (let i = 0; i < maxLength; i++) {
-        let sum = 0;
-        for (const t of padded) {
-          sum += t[i];
+      for (const part of parts) {
+        for (let i = 0; i < part.length; i++) {
+          output[i] += part[i];
         }
-        result.push(sum / padded.length);
       }
 
-      return result;
+      return output.map((s) => s / parts.length);
+    }
+
+    if (head === atom("repeat")) {
+      const [count, expr] = rest;
+      const evaluated = evaluate(expr);
+      let output = [];
+      for (let i = 0; i < count; i++) {
+        output = output.concat(evaluated);
+      }
+      return output;
     }
 
     throw new Error("Unknown command: " + head.toString());

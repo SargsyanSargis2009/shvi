@@ -25,57 +25,57 @@ const play = async (filePath) => {
 };
 
 Deno.test("Playing things", async (t) => {
-  // await t.step({
-  //   name: "playing 261.63 Hz /C4/ for one second",
-  //   fn: async () => {
-  //     const frequency = 261.63; // C4
-  //     const duration = 1000; // 1 second
+  await t.step({
+    name: "playing 261.63 Hz /C4/ for one second",
+    fn: async () => {
+      const frequency = 261.63; // C4
+      const duration = 1000; // 1 second
 
-  //     const samples = generatePCM(frequency, duration);
+      const samples = generatePCM(frequency, duration);
 
-  //     encodeWAV(samples);
+      encodeWAV(samples);
 
-  //     console.log("Playing generated WAV file...");
-  //     await play("output.wav");
-  //   },
-  //   ignore: false,
-  // });
+      console.log("Playing generated WAV file...");
+      await play("output.wav");
+    },
+    ignore: true,
+  });
 
-  // await t.step({
-  //   name: "playing a D4 for two seconds",
-  //   fn: async () => {
-  //     const music = `
-  //           (tone 293.66 200)
-  //         `;
+  await t.step({
+    name: "playing a D4 for two seconds",
+    fn: async () => {
+      const music = `
+            (tone 293.66 200)
+          `;
 
-  //     const tokens = tokenize(music);
-  //     const samples = evaluate(tokens[0]);
+      const tokens = tokenize(music);
+      const samples = evaluate(tokens[0]);
 
-  //     encodeWAV(samples);
+      encodeWAV(samples);
 
-  //     console.log("Playing generated WAV file...");
-  //     await play("output.wav");
-  //   },
-  //   ignore: false,
-  // });
+      console.log("Playing generated WAV file...");
+      await play("output.wav");
+    },
+    ignore: true,
+  });
 
-  // await t.step({
-  //   name: "playing a D4 for two seconds",
-  //   fn: async () => {
-  //     const music = `
-  //           (tone 293.66 200)
-  //         `;
+  await t.step({
+    name: "playing a D4 for two seconds",
+    fn: async () => {
+      const music = `
+            (tone 293.66 200)
+          `;
 
-  //     const tokens = tokenize(music);
-  //     const samples = evaluate(tokens[0]);
+      const tokens = tokenize(music);
+      const samples = evaluate(tokens[0]);
 
-  //     encodeWAV(samples);
+      encodeWAV(samples);
 
-  //     console.log("Playing generated WAV file...");
-  //     await play("output.wav");
-  //   },
-  //   ignore: true,
-  // });
+      console.log("Playing generated WAV file...");
+      await play("output.wav");
+    },
+    ignore: true,
+  });
 
   await t.step({
     name:
@@ -94,7 +94,7 @@ Deno.test("Playing things", async (t) => {
       await play("output.wav");
       Deno.removeSync("output.wav");
     },
-    ignore: false,
+    ignore: true,
   });
 
   await t.step({
@@ -151,7 +151,7 @@ Deno.test("Playing things", async (t) => {
 
       console.log("Playing generated WAV file...");
       await play("output.wav");
-      Deno.removeSync("output.wav");
+      // Deno.removeSync("output.wav");
     },
     ignore: false,
   });

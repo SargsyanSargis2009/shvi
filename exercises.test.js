@@ -4,13 +4,6 @@ Deno.test("Recursion", async (t) => {
   await t.step({
     name: "Does the bus serve the line?",
     fn: () => {
-      // below is the list of lines and buses that serve them
-      // the first element of the array is the line number
-      // the second element is an array of bus numbers that serve the line
-      // if the bus serves the line, return true
-      // if the bus does not serve the line, return false
-      // if the line does not exist, return false
-
       const linesAndBuses = [
         [1, [11, 22, 33]],
         [3, [44, 55, 66]],
@@ -19,11 +12,16 @@ Deno.test("Recursion", async (t) => {
         [9, [44, 55, 66]],
         [17, [11, 66, 77]],
       ];
-
+    
       const busServesLine = (line, bus) => {
-        throw new Error("");
+        for (const [lineNumber, buses] of linesAndBuses) {
+          if (lineNumber === line) {
+            return buses.includes(bus);
+          }
+        }
+        return false;
       };
-
+    
       const generalResult = busServesLine(5, 77);
       const nonExistentLineResult = busServesLine(100, 11);
       const nonExistentBusResult = busServesLine(1, 100);
@@ -32,7 +30,8 @@ Deno.test("Recursion", async (t) => {
       assertEquals(nonExistentLineResult, false);
       assertEquals(nonExistentBusResult, false);
       assertEquals(nonExistentLineAndBusResult, false);
-    },
+    }
+    
   });
   await t.step({
     name: "Is a string a palindrome?",
@@ -45,8 +44,12 @@ Deno.test("Recursion", async (t) => {
       // If the first and last characters are not equal, return false
 
       const isPalindrome = (str) => {
-        throw new Error("Not implemented");
+        const clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (clean.length <= 1) return true;
+        if (clean[0] !== clean[clean.length - 1]) return false;
+        return isPalindrome(clean.slice(1, -1));
       };
+      
 
       const generalResult = isPalindrome("racecar");
       const emptyStringResult = isPalindrome("");
@@ -66,8 +69,36 @@ Deno.test("Recursion", async (t) => {
       // Once the current chain is over, check if it is longer than the longest chain and replace if so
 
       const longestRepeatingCharacterChain = (str) => {
-        throw new Error("Not implemented");
+        if (str.length === 0) return "";
+      
+        let maxChar = str[0];
+        let maxLen = 1;
+      
+        let currentChar = str[0];
+        let currentLen = 1;
+      
+        for (let i = 1; i < str.length; i++) {
+          if (str[i] === currentChar) {
+            currentLen++;
+          } else {
+            if (currentLen > maxLen) {
+              maxLen = currentLen;
+              maxChar = currentChar;
+            }
+            currentChar = str[i];
+            currentLen = 1;
+          }
+        }
+      
+        // Final check at end of string
+        if (currentLen > maxLen) {
+          maxLen = currentLen;
+          maxChar = currentChar;
+        }
+      
+        return maxChar.repeat(maxLen);
       };
+      
 
       const generalResult = longestRepeatingCharacterChain("222aabbbbcc");
       const emptyStringResult = longestRepeatingCharacterChain("");

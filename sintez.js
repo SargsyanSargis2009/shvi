@@ -145,23 +145,43 @@ const tokenize = (input) => {
   return loop([[]], [...input]);
 };
 
-function evaluate(expression) {
+const evaluate = (expression) => {
   if (typeof expression === "number") return expression;
 
   if (Array.isArray(expression)) {
     const [head, ...rest] = expression;
 
     if (head === Symbol.for("tone")) {
-      const [freq, duration] = rest;
-      return generatePCM(freq, duration);
+      const [freq, dur] = rest;
+      return generatePCM(freq, dur);
     }
 
     if (head === Symbol.for("sequence")) {
-      const sequences = rest.map(evaluate);
-      return sequences.flat();
+      return rest.map(evaluate).flat();
     }
 
-    throw new Error("Unknown function: " + head.toString());
+    if (head === Symbol.for("parallel")) {
+      const tones = rest.map(evaluate);
+      const maxLength = Math.max(...tones.map(t => t.length));
+
+      const padded = tones.map(t => {
+        const missing = maxLength - t.length;
+        return t.concat(new Array(missing).fill(0));
+      });
+
+      const result = [];
+      for (let i = 0; i < maxLength; i++) {
+        let sum = 0;
+        for (const t of padded) {
+          sum += t[i];
+        }
+        result.push(sum / padded.length);
+      }
+
+      return result;
+    }
+
+    throw new Error("Unknown command: " + head.toString());
   }
 };
 

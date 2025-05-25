@@ -155,6 +155,30 @@ const tokenize = (input) => {
 };
 
 const environment = [
+  
+  [atom("silence"), (duration) => generatePCM(0, duration)],
+  [atom("tone"), (freq, dur) => generatePCM(freq, dur)],
+  [atom("repeat"), (count, result) => {
+    let output = [];
+    for (let i = 0; i < count; i++) {
+      output = output.concat(result);
+    }
+    return output;
+  }],
+  [atom("sequence"), (...parts) => {    
+    return parts.flat();
+  }],
+  [atom("parallel"), (...parts) => {
+    const maxLength = Math.max(...parts.map(p => p.length));
+    const output = new Array(maxLength).fill(0);
+    for (const part of parts) {
+      for (let i = 0; i < part.length; i++) {
+        output[i] += part[i];
+      }
+    }
+    return output.map(sample => sample / parts.length);
+  }],
+
   [atom("C0"), 16.35],
   [atom("C#0"), 17.32],
   [atom("D0"), 18.35],
@@ -268,16 +292,6 @@ const lookup = (symbol) => {
   return entry[1];
 };
 
-const lookupInEnvironment = (name) => {
-  const matchingDefinition = environment.find(([key]) => key === name);
-  if (matchingDefinition) {
-    return matchingDefinition[1];
-  } else {
-    const errorMessage = `🪈 Error: Unknown name ... ${atom(name)}`;
-    console.error(errorMessage);
-    return errorMessage;
-  }
-};
 
 const evaluate = (expression) => {
   if (typeof expression === "number") {
@@ -291,48 +305,9 @@ const evaluate = (expression) => {
   if (Array.isArray(expression)) {
     const [head, ...rest] = expression;
 
-    if (head === atom("tone")) {
-      const freq = evaluate(rest[0]);
-      const dur = evaluate(rest[1]);
-      return generatePCM(freq, dur);
-    }
-
-    else if (head === atom("sequence")) {
-      const parts = rest.map(evaluate);
-      return parts.flat();
-    }
-
-    else if (head === atom("parallel")) {
-      const parts = rest.map(evaluate);
-      const maxLength = Math.max(...parts.map(p => p.length));
-      const output = new Array(maxLength).fill(0);
-      for (const part of parts) {
-        for (let i = 0; i < part.length; i++) {
-          output[i] += part[i];
-        }
-      }
-      return output.map(sample => sample / parts.length);
-    }
-
-    else if (head === atom("repeat")) {
-      const count = evaluate(rest[0]);
-      const expr = rest[1];
-      const result = evaluate(expr);
-      let output = [];
-      for (let i = 0; i < count; i++) {
-        output = output.concat(result);
-      }
-      return output;
-    }
-
-    else if (head === atom("silence")) {
-      const dur = evaluate(rest[0]);
-      return generatePCM(0, dur);
-    }
-
-    else {
-      throw new Error("Unknown command: " + Symbol.keyFor(head));
-    }
+    const operator = evaluate(head);
+    const operands = rest.map(evaluate);
+    return operator(...operands);
   }
 
   throw new Error("Invalid expression");

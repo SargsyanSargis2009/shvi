@@ -219,6 +219,22 @@ Deno.test("Playing things", async (t) => {
       console.log("Playing generated WAV file...");
       await play("output.wav");
     },
+    ignore: true,
+  });
+
+  await t.step({
+    name: "Still D.R.E., with notes and definitions",
+    fn: async () => {
+      const music = await Deno.readTextFile("fixtures/still-dre.shvi");
+      const tokens = tokenize(music);
+      const samples = evaluate(tokens[0]);
+
+      encodeWAV(samples);
+
+      console.log("Playing generated WAV file...");
+      await play("output.wav");
+      Deno.removeSync("output.wav");
+    },
     ignore: false,
   });
 });

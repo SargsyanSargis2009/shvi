@@ -268,6 +268,17 @@ const lookup = (symbol) => {
   return entry[1];
 };
 
+const lookupInEnvironment = (name) => {
+  const matchingDefinition = environment.find(([key]) => key === name);
+  if (matchingDefinition) {
+    return matchingDefinition[1];
+  } else {
+    const errorMessage = `🪈 Error: Unknown name ... ${atom(name)}`;
+    console.error(errorMessage);
+    return errorMessage;
+  }
+};
+
 const evaluate = (expression) => {
   if (typeof expression === "number") {
     return expression;

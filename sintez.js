@@ -61,40 +61,6 @@ function generatePCM(frequency, duration) {
   return [...fadeIn, ...sustain, ...fadeOut];
 }
 
-function sequence(...PCMs) {
-  const totalSamples = PCMs.reduce((acc, pcm) => acc + pcm.length, 0);
-  const combinedSamples = new Int16Array(totalSamples);
-
-  PCMs.reduce((offset, pcm) => {
-    combinedSamples.set(pcm, offset);
-    return offset + pcm.length;
-  }, 0);
-
-  return combinedSamples;
-}
-
-function parallel(...PCMs) {
-  const maxLength = Math.max(...PCMs.map((pcm) => pcm.length));
-  const combinedSamples = new Int16Array(maxLength);
-  const numPCMs = PCMs.length;
-  for (let i = 0; i < maxLength; i++) {
-    const samplesAtI = PCMs.map((pcm) => pcm[i] || 0);
-    const averageSample = samplesAtI.reduce((acc, sample) => acc + sample, 0) /
-      numPCMs;
-    combinedSamples[i] = averageSample;
-  }
-  return combinedSamples;
-}
-
-function repeat(times, PCM) {
-  const samples = [];
-  for (let i = 0; i < times; i++) {
-    for (const point of PCM) {
-      samples.push(point);
-    }
-  }
-  return samples;
-}
 
 async function encodeWAV(
   samples,
@@ -183,6 +149,13 @@ const tokenize = (input) => {
 const evaluate = (expression) => {
   if (typeof expression === "number") return expression;
 
+  // Handle the symbols
+  if (typeof expression === "symbol") {
+    throw new Error(
+      `🪈 Error: Unknown symbol ....... \`${Symbol.keyFor(expression)}\``,
+    );
+  }
+
   if (Array.isArray(expression)) {
     const [head, ...rest] = expression;
 
@@ -229,3 +202,9 @@ const run = (input) => {
   const expression = tokens[0];
   return evaluate(expression);
 };
+
+const environment = [
+  // Fill in the commands, such as `tone` and `sequence` here
+  [atom("C0"), 16.35],
+  // Fill in the rest of the notes here
+];

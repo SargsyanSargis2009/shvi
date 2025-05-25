@@ -12,7 +12,7 @@ Deno.test("Recursion", async (t) => {
         [9, [44, 55, 66]],
         [17, [11, 66, 77]],
       ];
-    
+
       const busServesLine = (line, bus) => {
         for (const [lineNumber, buses] of linesAndBuses) {
           if (lineNumber === line) {
@@ -21,7 +21,7 @@ Deno.test("Recursion", async (t) => {
         }
         return false;
       };
-    
+
       const generalResult = busServesLine(5, 77);
       const nonExistentLineResult = busServesLine(100, 11);
       const nonExistentBusResult = busServesLine(1, 100);
@@ -30,8 +30,7 @@ Deno.test("Recursion", async (t) => {
       assertEquals(nonExistentLineResult, false);
       assertEquals(nonExistentBusResult, false);
       assertEquals(nonExistentLineAndBusResult, false);
-    }
-    
+    },
   });
   await t.step({
     name: "Is a string a palindrome?",
@@ -47,8 +46,13 @@ Deno.test("Recursion", async (t) => {
         const clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
         if (clean.length <= 1) return true;
         if (clean[0] !== clean[clean.length - 1]) return false;
+        return isPalindrome(clean.slice(1, -1));
       };
-      
+
+      const generalResult = isPalindrome("A man, a plan, a canal: Panama");
+      const emptyStringResult = isPalindrome("");
+      const nonPalindromeResult = isPalindrome("hello");
+
       assertEquals(generalResult, true);
       assertEquals(emptyStringResult, true);
       assertEquals(nonPalindromeResult, false);
@@ -65,13 +69,13 @@ Deno.test("Recursion", async (t) => {
 
       const longestRepeatingCharacterChain = (str) => {
         if (str.length === 0) return "";
-      
+
         let maxChar = str[0];
         let maxLen = 1;
-      
+
         let currentChar = str[0];
         let currentLen = 1;
-      
+
         for (let i = 1; i < str.length; i++) {
           if (str[i] === currentChar) {
             currentLen++;
@@ -84,16 +88,15 @@ Deno.test("Recursion", async (t) => {
             currentLen = 1;
           }
         }
-      
+
         // Final check at end of string
         if (currentLen > maxLen) {
           maxLen = currentLen;
           maxChar = currentChar;
         }
-      
+
         return maxChar.repeat(maxLen);
       };
-      
 
       const generalResult = longestRepeatingCharacterChain("222aabbbbcc");
       const emptyStringResult = longestRepeatingCharacterChain("");
@@ -114,9 +117,14 @@ Deno.test("Recursion", async (t) => {
         ["One World Trade Center", 541],
         ["Taipei 101", 508],
       ];
-
+      
       const howHigh = (building) => {
-        throw new Error("Implement me!");
+        for (const [name, height] of buildingsAndHeights) {
+          if (name === building) {
+            return height;
+          }
+        }
+        return -1;
       };
 
       const generalResult = howHigh("Burj Khalifa");

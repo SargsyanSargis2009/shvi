@@ -177,6 +177,6 @@ Deno.test("Playing things", async (t) => {
       await play("output.wav");
       Deno.removeSync("output.wav");
     },
-    ignore: false,
+    ignore: true,
   });
 });

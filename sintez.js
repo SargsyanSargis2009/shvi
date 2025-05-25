@@ -1,16 +1,11 @@
 export { encodeWAV, evaluate, generatePCM, run, tokenize, typeify };
-<<<<<<< HEAD
 
 const amplitude = 32767;
 const sampleRate = 44100;
 
-=======
->>>>>>> 40207f2 (:construction: setting up for playing loops)
 
-const AMPLITUDE = 32767;
-const SAMPLE_RATE = 44100;
 
-// sample[n]= A ⋅ sin(2 * π * f * (n / R)​)
+// sample[n]= A ⋅ sin(2 * π * f * (n / R))
 
 // Where:
 //   A: Amplitude (max value based on bit depth, e.g., 32767 for 16-bit)
@@ -18,17 +13,8 @@ const SAMPLE_RATE = 44100;
 //   R: Sample rate (samples per second), typically 44100 Hz
 //   n: Sample number (integer), from 0 to R × duration − 1
 
-<<<<<<< HEAD
 function generatePCM(frequency, duration) {
   function fadeInPart(frequency, fadeSamples) {
-=======
-function generatePCM(frequency, duration, offset = 0) {
-  const totalSamples = Math.floor(SAMPLE_RATE * (duration / 1000));
-  const fadeSamples = Math.floor(SAMPLE_RATE * 0.01); // 10ms fade
-  const sustainSamples = totalSamples - 2 * fadeSamples;
-
-  const generateAttack = (frequency, fadeSamples, offset) => {
->>>>>>> 40207f2 (:construction: setting up for playing loops)
     const samples = [];
     for (let i = 0; i < fadeSamples; i++) {
       const t = i / sampleRate;
@@ -39,11 +25,7 @@ function generatePCM(frequency, duration, offset = 0) {
     return samples;
   };
 
-<<<<<<< HEAD
   function sustainPart(frequency, sustainSamples, startIndex) {
-=======
-  const generateSustain = (frequency, numSamples, offset) => {
->>>>>>> 40207f2 (:construction: setting up for playing loops)
     const samples = [];
     for (let i = 0; i < sustainSamples; i++) {
       const t = (startIndex + i) / sampleRate;
@@ -53,11 +35,7 @@ function generatePCM(frequency, duration, offset = 0) {
     return samples;
   };
 
-<<<<<<< HEAD
   function fadeOutPart(frequency, fadeSamples, startIndex) {
-=======
-  const generateDecay = (frequency, fadeSamples, offset) => {
->>>>>>> 40207f2 (:construction: setting up for playing loops)
     const samples = [];
     for (let i = 0; i < fadeSamples; i++) {
       const t = (startIndex + i) / sampleRate;
@@ -66,15 +44,11 @@ function generatePCM(frequency, duration, offset = 0) {
       samples.push(sample);
     }
     return samples;
-<<<<<<< HEAD
   }
 
   const totalSamples = Math.floor(sampleRate * (duration / 1000));
   const fadeSamples = Math.floor(totalSamples / 10);
   const sustainSamples = totalSamples - fadeSamples * 2;
-=======
-  };
->>>>>>> 40207f2 (:construction: setting up for playing loops)
 
   const fadeIn = fadeInPart(frequency, fadeSamples);
   const sustain = sustainPart(frequency, sustainSamples, fadeSamples);
@@ -110,6 +84,16 @@ function parallel(...PCMs) {
     combinedSamples[i] = averageSample;
   }
   return combinedSamples;
+}
+
+function repeat(times, PCM) {
+  const samples = [];
+  for (let i = 0; i < times; i++) {
+    for (const point of PCM) {
+      samples.push(point);
+    }
+  }
+  return samples;
 }
 
 async function encodeWAV(

@@ -227,7 +227,7 @@ Deno.test("Playing things", async (t) => {
     fn: async () => {
       const music = await Deno.readTextFile("fixtures/still-dre.shvi");
       const tokens = tokenize(music);
-      const samples = evaluate(tokens[0]);
+      const samples = evaluate(tokens);
 
       encodeWAV(samples);
 

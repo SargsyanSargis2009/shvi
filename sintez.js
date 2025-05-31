@@ -21,7 +21,7 @@ function generatePCM(frequency, duration) {
       samples.push(sample);
     }
     return samples;
-  };
+  }
 
   function sustainPart(frequency, sustainSamples, startIndex) {
     const samples = [];
@@ -31,7 +31,7 @@ function generatePCM(frequency, duration) {
       samples.push(sample);
     }
     return samples;
-  };
+  }
 
   function fadeOutPart(frequency, fadeSamples, startIndex) {
     const samples = [];
@@ -58,7 +58,6 @@ function generatePCM(frequency, duration) {
 
   return [...fadeIn, ...sustain, ...fadeOut];
 }
-
 
 function repeat(times, PCM) {
   const samples = [];
@@ -117,7 +116,6 @@ const typeify = (token) => {
 
 const atom = (name) => Symbol.for(name);
 
-
 const tokenize = (input) => {
   if (input.trim() === "") return [];
   const loop = (
@@ -155,7 +153,6 @@ const tokenize = (input) => {
 };
 
 const environment = [
-  
   [atom("silence"), (duration) => generatePCM(0, duration)],
   [atom("tone"), (freq, dur) => generatePCM(freq, dur)],
   [atom("repeat"), (count, result) => {
@@ -165,18 +162,18 @@ const environment = [
     }
     return output;
   }],
-  [atom("sequence"), (...parts) => {    
+  [atom("sequence"), (...parts) => {
     return parts.flat();
   }],
   [atom("parallel"), (...parts) => {
-    const maxLength = Math.max(...parts.map(p => p.length));
+    const maxLength = Math.max(...parts.map((p) => p.length));
     const output = new Array(maxLength).fill(0);
     for (const part of parts) {
       for (let i = 0; i < part.length; i++) {
         output[i] += part[i];
       }
     }
-    return output.map(sample => sample / parts.length);
+    return output.map((sample) => sample / parts.length);
   }],
 
   [atom("C0"), 16.35],
@@ -288,10 +285,9 @@ const environment = [
 
 const lookup = (symbol) => {
   const entry = environment.find(([key]) => key === symbol);
-  if (!entry) throw new Error(`Unknown symbol: ${atom(symbol)}`);
+  if (!entry) throw new Error(`Unknown symbol: ${Symbol.keyFor(symbol)}`);
   return entry[1];
 };
-
 
 const evaluate = (expression) => {
   if (typeof expression === "number") {
@@ -305,9 +301,22 @@ const evaluate = (expression) => {
   if (Array.isArray(expression)) {
     const [head, ...rest] = expression;
 
-    const operator = evaluate(head);
-    const operands = rest.map(evaluate);
-    return operator(...operands);
+    if (Array.isArray(head) && head[0] === atom("define")) {
+      const [_, name, rawValue] = head;
+      const value = evaluate(rawValue);
+
+      environment.unshift([name, value]);
+      if(rest.length == 1){
+        return evaluate(rest[0]);
+      }else{
+        return evaluate(rest);
+      }
+
+    } else {
+      const operator = evaluate(head);
+      const operands = rest.map(evaluate);
+      return operator(...operands);
+    }
   }
 
   throw new Error("Invalid expression");
